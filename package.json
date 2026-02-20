@@ -1,0 +1,25 @@
+{
+  "name": "channels",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "figmaupdate": "npx ts-node src/figma/figma.ts",
+    "test": "npx playwright test",
+    "export-csv": "node json2csv.js",
+    "test:ui": "npx playwright test --ui",
+    "codegen": "npx playwright codegen https://online.if.test.vtb.ru",
+    "mobile": "npx playwright --mobile",
+    "test:allure": "playwright test && allure generate --clean",
+    "report:open": "allure open allure-results",
+    "send:test": "node sendMessage.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@playwright/test": "^1.58.2",
+    "@types/node": "^25.2.3"
+  }
+}
