@@ -1,0 +1,102 @@
+//скролл
+ await page.evaluate(() => window.scrollBy(20, window.innerHeight)); //скролл
+ await page.getByRole('button', { name: 'Все шаблоны', exact: true }).scrollIntoViewIfNeeded(); //скролл пока не найдем значения
+
+ //Проверка цвета элемента
+        // const element = page.locator('xpath=//*[@id="mf_1397_1_smart_search__resultContainer__scroll"]/section/section[2]/button[5]');
+        // const color = await element.evaluate((el) => getComputedStyle(el).color);
+        // expect(color).toBe('rgba(31, 35, 41, 1)');
+
+
+  // цвет текста
+  const color = await el.evaluate((el) => getComputedStyle(el).color);
+  await expect(color).toBe('rgb(0, 0, 0)'); // подставьте ваш ожидаемый цвет
+
+  // фон
+  const bg = await el.evaluate((el) => getComputedStyle(el).backgroundColor);
+  await expect(bg).toBe('rgb(255, 255, 255)');
+
+  // размеры
+  const { width, height } = await el.evaluate((el) => {
+    const r = el.getBoundingClientRect();
+    return { width: r.width, height: r.height };
+  });
+  await expect(width).toBeGreaterThan(0);
+  await expect(height).toBeGreaterThan(0);
+});
+
+
+//Функция на проверку названия входа  в чат Или Задать вопрос или Новое сообщени
+       async function clickIfExistsQuestionOrNewMessage(page) {
+  // Попытка найти первую кнопку
+  
+const newMessage = page.getByRole('button', { name: 'новое сообщение' });
+  // Проверим, видим ли элемент
+  if (await newMessage.isVisible()) {
+    await question.click();
+  } else {
+    // Если первая кнопка не видна, нажимаем вторую
+    const question = page.getByRole('button', { name: 'Задать вопрос' });
+    await question.click();
+  }
+}
+await clickIfExistsQuestionOrNewMessage(page);
+
+
+//узнать свой chat_id
+https://api.telegram.org/bot8411056120:AAFLLqiobkogdE9kzgAUfQXd3iYsbpP6OVo/getUpdates
+
+
+....Достаем ответ json запроса
+    // await mainPage.Chips_credit.click();
+    // const url = 'https://online.if.test.vtb.ru/msa/api-gw/private/bsps/bsps-core-search/api/v1/search?offset=0&providerPage=0&query=%D0%BA%D1%80%D0%B5%D0%B4%D0%B8%D1%82&regionId=50&section=MAIN_SECTION';
+    // const response = await page.waitForResponse(url);
+    // const json = await response.json();
+    // const getAtribut = await json.sectionSuggestions[1].suggestionData[0].deeplink;
+    // expect(getAtribut).toBe('https://online.vtb.ru/i/kn');
+
+
+    ......Разделение тестовых запусков
+    export default defineConfig({
+  timeout: 60000, // Timeout is shared between all tests.
+  projects: [
+    {
+      name: 'Smoke',
+      testMatch: /.*smoke.spec.ts/,
+      retries: 0,
+    },
+    {
+      name: 'Default',
+      testIgnore: /.*smoke.spec.ts/,
+      retries: 2,
+    },
+  ],
+});
+
+
+
+const response = await page.request.get('https://online.if.test.vtb.ru/msa/api-gw/private/core/core-session-context/user-info');
+        const headers = response.headers();
+        const authHeader = headers['authorization'];
+         console.log(response);
+  
+  const nextResponse = await page.request.get('https://online.if.test.vtb.ru/msa/api-gw/private/core/core-session-context/user-info', {
+  headers: {
+    ...headers, // можно перенести часть заголовков
+    // или переопределить:
+    Authorization: authHeader,
+  }
+  
+         //  const url = await page.request.get('https://online.if.test.vtb.ru/msa/api-gw/private/core/core-session-context/user-info', {
+  //   headers : {
+  //     'Referer': 'https://online.if.test.vtb.ru/login',
+  //     'authorization' : 'Bearer eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiI0MDI5Nzc2MzUiLCJhdWQiOiJDMlZZdjNiNlJIRWlnMm5fNTZiZm5uM0dmSTRhIiwiYW1yIjpbImFjY2Vzc19jb2RlX2liIl0sImF6cCI6IkMyVll2M2I2UkhFaWcybl81NmJmbm4zR2ZJNGEiLCJzcF9uYW1lIjoid2ViLWJhbmsiLCJkb21haW4iOiJtYXN0ZXIiLCJhdXRoX3Nlc3Npb25faWQiOiJmMjRiY2Y4Mi0zYzYwLTQyOGEtOTM4Mi1kNmFiOTgzNTk4ZWUiLCJ1c2VyX2ZpbmdlcnByaW50IjoiYmU3NzljNDI0NWFlMmYyZGRlYzI1Zjc1YzJjMGZiMTIwZDc1ZmUzNDk4MjFjYzFiYzQ5MTk0OTVhZjdlYTUyZiIsIm1zYV9zZXNzaW9uX2lkIjoiOTZjYzk5NjktNWU1Ni00MDBhLTliZjktZTMzNjk3ZWI0ZTRkIiwiYWNyIjoibXNhPWV5SllMVlZ6WlhJdFUyVnpjMmx2YmkxSlJDSTZJamsyWTJNNU9UWTVMVFZsTlRZdE5EQXdZUzA1WW1ZNUxXVXpNelk1TjJWaU5HVTBaQ0lzSW5KdmRYUmxUbUZ0WlNJNkludGNJbUpzYjJOclhDSTZYQ0l3WENKOUlpd2ljMmhoY21ST1lXMWxJam9pY3pBaUxDSllMVkpQVlZSRkxVNUJUVVVpT2lKN1hDSmliRzlqYTF3aU9sd2lNRndpZlNJc0lsZ3RVMGhCVWtRdFRrRk5SU0k2SW5Nd0lpd2lXQzFFWldKMVp5STZJbVpoYkhObElpd2lXQzFKYm1sMGFXRjBiM0l0U0c5emRDSTZJalV1TWpJNExqRXhPUzR4TURraUxDSllMVU5vWVc1dVpXd2lPaUpYVjFjeUlpd2lXQzFRYkdGMFptOXliU0k2SW5kbFlpSXNJbGd0VEc5bmFXNHRUVzlrWlNJNmJuVnNiQ3dpV0MxV1pYSnphVzl1SWpwdWRXeHNMQ0pZTFZKdmJHVnpMVll5SWpvaVVFVk9YMVJGVTFRaWZRPT0iLCJpc3MiOiJodHRwOi8ve3sgYW5zaWJsZV9ob3N0IH19LyIsIm5iZiI6MTc2OTY4MzUwOCwiZXhwIjoxNzY5Njg0NDA4LCJpYXQiOjE3Njk2ODM1MDh9.mC3wcVMbvKv5z_OICu4D3jP6CMrwWEl5h-Xa6yv2NLUhwNI5GZog500yltrojVrrzVQQjKxj972EsSP4MFeyX894IbQbgJO_wrwdSdwz8gzKnaqO5uzSGvICB-y_wUhkQxTs8rGejXfSVzS1AqDuiOYTqPketGRoPotqqMi56qpOmRSxCECtTAIz-1xE4-EPtE5qg0-Vk2QsV0FDTsOEUc7Nd6fy2a1-nPaAz5TWi9ELcAIQy6aCy336G25qYn-SXpCvFs6eeivEL7cn7u-t2J8blRFln92poMTCehmJaluPFwPCfKMnVQue4VB4fVmvra3dCxLqyeidfSQWnDbnn6Cg4cHpSVU7muT9ELRRZ24vAcQmvCoOdHDAlYUcGcrz8IEhuU5-PRJQMlJ30Aj6cgMHHabXyao2Sa0iWtR7kc68kT4GZsTcRdClPqpi8lWYVh5SKf22p1wBcWU78saHQWg9gciezFUSS_cejtdCxYhCmYJK7nMaFrYTICwkQqlTdrH3ZKFGFoFSn-Dlpd-7NmL2P56vXHNbtDNtGNoqNVNCwsl3AeMOFPhzM7rNiC_rs-Ci-UJPlzBzWzqm0zSoS47RPBg1aZ5SX8FjKxrZpcxKVvCr_CpjYPH1w1N7dtJlUPOkOB1JcSzbDH_Q97Z3Zf8hURxO42ZP5_NqFmgpHRY',
+  //     'x-finger-print' : 'eyJ2ZXJzaW9uIjoiMy4yLjIiLCJqYXZhRW5hYmxlZCI6ImZhbHNlIiwiY3B1IjoiMTIiLCJ1bmlxdWVXZWJJZCI6IjRlZDc1Nzk4ZmI4MDc2YTczNGViNjZjMTg3MzUwM2JhYjNkNTJmMjMzYTk3YzY1MTAzZmUxMjFjZTcxNTI0NTciLCJzZXNzaW9uSWQiOiIwMzY0NGE3MmQwYzRjMTAzYTJmMjZmMmYwNzhkNmQwM2I2MGI1MjNiYWEzMGU2NDI2ODE1ODk5MGEzZWRhMjI5IiwiYnJvd3Nlckxhbmd1YWdlIjoibm90IGF2YWlsYWJsZSIsImlmcmFtZWQiOiJmYWxzZSIsImludGlwIjoiMTcyLjI1LjgwLjEiLCJiYXR0ZXJ5IjoiMTAwJSIsIlVzZXItQWdlbnQiOiJNb3ppbGxhLzUuMCAoV2luZG93cyBOVCAxMC4wOyBXaW42NDsgeDY0KSBBcHBsZVdlYktpdC81MzcuMzYgKEtIVE1MLCBsaWtlIEdlY2tvKSBDaHJvbWUvMTQ0LjAuMC4wIFNhZmFyaS81MzcuMzYiLCJyZWR1Y2VkTW90aW9uIjoiZmFsc2UiLCJtb3VzZVRpbWluZ1YxIjpbWzEuNzkxNzU5NDY5MjI4MDU1LDIuMDc5NDQxNTQxNjc5ODM1Nyw0LjczMTY3NjY3ODQ0NjMzNiwyLjU4OTE1NzYwNTQ0Njc2MywxLjQ1NjY0OTkwNjg4ODIxMDJdLFsxLjg2ODgzNDgwOTE0MTY4NCwyLjA3OTQ0MTU0MTY3OTgzNTcsMy4wMTI5MzI5ODY5MTI2NTcsMi4yNzY5NTg3MDgxMDY5OTIsMC45OTUwMDQ0MzY4MzI1NDgxXSxbMS45NDU5MTAxNDkwNTUzMTMyLDIuMDEyNjc1ODQ1MzY3NTc0NCwyLjA3OTQ0MTU0MTY3OTgzNTcsMi4wNTUxNTg4ODA0MDU0MjM3LDAuMzA0NzgzOTYxNTg0ODk1MjRdLFsxLjk0NTkxMDE0OTA1NTMxMzIsMi4wNzk0NDE1NDE2Nzk4MzU3LDMuODc5NTkzNzE5MjUzODk4LDIuNjc4NTUxNjE2MjU1MzQ3MywyLjI1NjM0ODU0MDgyODQ1NjddXSwidXNlckFnZW50IjoiTW96aWxsYS81LjAgKFdpbmRvd3MgTlQgMTAuMDsgV2luNjQ7IHg2NCkgQXBwbGVXZWJLaXQvNTM3LjM2IChLSFRNTCwgbGlrZSBHZWNrbykgQ2hyb21lLzE0NC4wLjAuMCBTYWZhcmkvNTM3LjM2Iiwid2ViZHJpdmVyIjoiZmFsc2UiLCJsYW5ndWFnZSI6InJ1IiwiY29sb3JEZXB0aCI6IjI0IiwiZGV2aWNlTWVtb3J5IjoiOCIsInBpeGVsUmF0aW8iOiIxLjEwMDAwMDAyMzg0MTg1OCIsImhhcmR3YXJlQ29uY3VycmVuY3kiOiIxMiIsInNjcmVlblJlc29sdXRpb24iOiIzODQwLDE1ODAiLCJhdmFpbGFibGVTY3JlZW5SZXNvbHV0aW9uIjoiMzg0MCwxNTgwIiwidGltZXpvbmVPZmZzZXQiOiItMTgwIiwidGltZXpvbmUiOiJFdXJvcGUvTW9zY293Iiwic2Vzc2lvblN0b3JhZ2UiOiJ0cnVlIiwibG9jYWxTdG9yYWdlIjoidHJ1ZSIsImluZGV4ZWREYiI6InRydWUiLCJvcGVuRGF0YWJhc2UiOiJmYWxzZSIsInBsYXRmb3JtIjoiV2luMzIiLCJwbHVnaW5zIjoiUERGIFZpZXdlcixQb3J0YWJsZSBEb2N1bWVudCBGb3JtYXQsYXBwbGljYXRpb24vcGRmLHBkZix0ZXh0L3BkZixwZGYsQ2hyb21lIFBERiBWaWV3ZXIsUG9ydGFibGUgRG9jdW1lbnQgRm9ybWF0LGFwcGxpY2F0aW9uL3BkZixwZGYsdGV4dC9wZGYscGRmLENocm9taXVtIFBERiBWaWV3ZXIsUG9ydGFibGUgRG9jdW1lbnQgRm9ybWF0LGFwcGxpY2F0aW9uL3BkZixwZGYsdGV4dC9wZGYscGRmLE1pY3Jvc29mdCBFZGdlIFBERiBWaWV3ZXIsUG9ydGFibGUgRG9jdW1lbnQgRm9ybWF0LGFwcGxpY2F0aW9uL3BkZixwZGYsdGV4dC9wZGYscGRmLFdlYktpdCBidWlsdC1pbiBQREYsUG9ydGFibGUgRG9jdW1lbnQgRm9ybWF0LGFwcGxpY2F0aW9uL3BkZixwZGYsdGV4dC9wZGYscGRmIiwiY2FudmFzIjoiYmMxMjA1NTY5N2FlMTA2YmU3Y2RlYjQ0Yzk2MjEyYzc1ZmYwNTk0YWE2ZDkwMzJlNmIxYzViMjY0NmYzMjgwMyIsIndlYmdsIjoiYWM4YzNhMjdhZGJiODFlMWE1ZDIzYmYzYmE1YTJmOTQxY2VkMDBmMWZiZmIzMDdkY2FhMjYzNGZkZmU1YjAyZiIsIndlYmdsVmVuZG9yQW5kUmVuZGVyZXIiOiJHb29nbGUgSW5jLiAoQU1EKX5BTkdMRSAoQU1ELCBSYWRlb24gUlggNTUwMCBYVCAoMHgwMDAwNzM0MCkgRGlyZWN0M0QxMSB2c181XzAgcHNfNV8wLCBEM0QxMSkiLCJhZEJsb2NrIjoiZmFsc2UiLCJoYXNMaWVkTGFuZ3VhZ2VzIjoiZmFsc2UiLCJoYXNMaWVkUmVzb2x1dGlvbiI6ImZhbHNlIiwiaGFzTGllZE9zIjoiZmFsc2UiLCJoYXNMaWVkQnJvd3NlciI6ImZhbHNlIiwidG91Y2hTdXBwb3J0IjoiMCxmYWxzZSxmYWxzZSIsImF1ZGlvIjoiMTI0LjA0MzQ3NTI3NTE2MDc0Iiwib3NDcHUiOnsidmFsdWUiOiJ1bmRlZmluZWQiLCJjb3VudCI6IjEyIiwiZHVyYXRpb24iOiIwIn0sInRyYWNrIjp7InZhbHVlIjoiMzljZGVkZGUtNWQyNi00YmQ4LTgzMjQtYjM0MzNkMjBkNzJkIDIwMjYtMDEtMjlUMDY6MjU6NDcuMzc2WiIsImFkZGl0aW9uYWxUcmFja3MiOnsiTG9jYWxTdG9yYWdlIjoiMzljZGVkZGUtNWQyNi00YmQ4LTgzMjQtYjM0MzNkMjBkNzJkIDIwMjYtMDEtMjlUMDY6MjU6NDcuMzc2WiIsIlNlc3Npb25TdG9yYWdlIjpudWxsLCJIaXN0b3J5QXBpIjpudWxsLCJJbmRleERiIjoiMzljZGVkZGUtNWQyNi00YmQ4LTgzMjQtYjM0MzNkMjBkNzJkIDIwMjYtMDEtMjlUMDY6MjU6NDcuMzc2WiIsIkNhY2hlQXBpIjoiMzljZGVkZGUtNWQyNi00YmQ4LTgzMjQtYjM0MzNkMjBkNzJkIDIwMjYtMDEtMjlUMDY6MjU6NDcuMzc2WiIsIkNhY2hlQnJvd3NlciI6bnVsbCwiQ29va2llIjpudWxsLCJab21iaWVDb29raWUiOm51bGx9fX0=',
+  //     'x-call-id' : 'dc53cab8-4c82-4f33-b32f-45498fe4d490',
+  //     'api-gw' : '/msa/api-gw/private/core/core-session-context/use',
+  //   }
+   });
+    
+    const resp1 = await page.waitForResponse('https://online.if.test.vtb.ru/msa/api-gw/private/core/core-session-context/user-info');
+        const jsonFormat = nextResponse.json();
+    console.log(jsonFormat);
