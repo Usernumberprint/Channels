@@ -33,10 +33,20 @@ export default defineConfig({
     trace: 'on-first-retry',
     viewport : {height : 1263, width: 1165},
     ignoreHTTPSErrors: true,
+    //colorScheme : 'dark',
   },
 
   /* Configure projects for major browsers */
   projects: [
+     {
+      name: 'dark',
+      use: { colorScheme: 'dark' },
+    },
+    {
+      name: 'light',
+      use: { colorScheme: 'light' },
+    },
+
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
@@ -69,7 +79,7 @@ export default defineConfig({
     // },
     {
       name: 'Google Chrome',
-      use: { ...devices['Desktop Chrome'], channel: 'chrome', viewport :  {height : 1263, width: 1165},headless: false, },
+      use: { ...devices['Desktop Chrome'], channel: 'chrome', viewport :  {height : 1263, width: 1165},headless: false,},
     },
   ],
 

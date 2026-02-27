@@ -1,13 +1,17 @@
 // @ts-check
-import { test, expect } from '@playwright/test';
+import { test, expect, chromium } from '@playwright/test';
 import { Login } from './Login/login';
 import { MainPageModel } from './Login/MainPageModel';
 import { log } from 'node:console';
 import { mainModule } from 'node:process';
 import { ADDRGETNETWORKPARAMS } from 'node:dns';
-
+import { defineConfig } from '@playwright/test';
+import { resolveObjectURL } from 'node:buffer';
+import { type } from 'node:os';
 const phones = '9141679897';
 const okd = '1212'
+
+ 
 test('Переход в канлы', async ({ page }) => {
   const login = new Login(page);
   const MainPage = new MainPageModel(page);
@@ -17,12 +21,13 @@ test('Переход в канлы', async ({ page }) => {
   await login.inputOTP()//ввод смс 000000
   await login.inputOKD(okd);//ввод ОКД , передаю константу в каждый тест ели нет обший концепции проверок
   await page.waitForTimeout(5000); //5 тайм аута секунд на прогрузку главной
-  await page.locator('[data-test-id="webchat_toggleButton"]').hover()
-  //await expect(MainPage.chatSmall).toBeVisible(); //проверяем что чат виден
+  await page.locator('[data-test-id="webchat_toggleButton"]').hover();//Наведение на иконку чата на главной
+  await expect(page.getByText('Чат с банком')).toBeVisible();//Текст "Чат с банком" виден
+  await expect(MainPage.chatSmall).toBeVisible(); //проверяем что чат виден
   await MainPage.chatSmall.click();//Клик на чат
 
   await page.locator('[data-test-id="ChannelsTabList_TabButton"]', {hasText : 'Каналы'}).click();//Клик на вкладку Каналы
-  await expect(MainPage.cardButton).toHaveCount(6);//Проверка что каналов всего 5
+  await expect(MainPage.cardButton).toHaveCount(6);//Проверка что каналов всего 6
   //await expect(page.locator('.unreadMessagesIndicator-b36edece').first()).toBeVisible(); //У первого канала есть не прочитанные сообщения
   await page.locator('[data-test-id="ChannelsCard_CardButton"]').nth(1).click();//Клик на второй канал по списку
   await page.waitForTimeout(3000);
@@ -36,7 +41,7 @@ test('Переход в канлы', async ({ page }) => {
  
   await opciy.last().click();//Клик на три точки
   await opciy.last().click();//Клик на три точки
-  //await page.waitForTimeout(2000);//Таймаут
+  
   
   await expect(page.locator('[data-test-id="Reactions_MoreReactionsButton"]')).toBeVisible({timeout : 1000});//Видим отображение стрелки раскрытия реакции
  
@@ -73,7 +78,9 @@ test('Переход в канлы', async ({ page }) => {
   await login.inputOTP()//ввод смс 000000
   await login.inputOKD(okd);//ввод ОКД , передаю константу в каждый тест ели нет обший концепции проверок
   await page.waitForTimeout(5000); //5 тайм аута секунд на прогрузку главной
-   await page.locator('[data-test-id="webchat_toggleButton"]').hover()
+  await page.locator('[data-test-id="webchat_toggleButton"]').hover();
+  await expect(page.getByText('Чат с банком')).toBeVisible();//Текст "Чат с банком" виден
+
 
   await expect(MainPage.chatSmall).toBeVisible(); //проверяем что чат виден
   await MainPage.chatSmall.click();//Клик на чат
@@ -90,7 +97,7 @@ test('Переход в канлы', async ({ page }) => {
 
 });
 
-    test('Бабл с перелистыванием >"', async ({ page }) => {
+    test('Бабл с перелистыванием "', async ({ page }) => {
   const login = new Login(page);
   const MainPage = new MainPageModel(page);
   await login.open();//Переход по заранее прописанному урлу online.if.test****
@@ -99,7 +106,7 @@ test('Переход в канлы', async ({ page }) => {
   await login.inputOKD(okd);//ввод ОКД , передаю константу в каждый тест ели нет обший концепции проверок
   await page.waitForTimeout(5000); //5 тайм аута секунд на прогрузку главной
   await page.locator('[data-test-id="webchat_toggleButton"]').hover();//Наведение кнопку чата на главной для раскрытия ее
-  await expect(page.getByText('Чат с банком')).toBeVisible();//Текст "Чат с багком" виден
+  await expect(page.getByText('Чат с банком')).toBeVisible();//Текст "Чат с банком" виден
   await expect(MainPage.chatSmall).toBeVisible(); //проверяем что чат виден
 
   await MainPage.chatSmall.click();//Клик на чат
@@ -121,11 +128,27 @@ test('Переход в канлы', async ({ page }) => {
     }
   }
 
-    test.step('Проверка цвета текста', async() => {
+    test.step('Проверка цвета текста и его размера', async() => {
   const targeText = await page.locator('[data-test-id="webchat_message_text"]', {hasText : 'Хотите, чтобы сбережения приносили больше дохода?'});//Заголовок в бабле
   const color = await targeText.evaluate((el) => getComputedStyle(el).color);
   expect(color).toBe('rgb(34, 37, 43)');// Проверка цвета текста заголовока 
-    })
+  const box = await targeText.boundingBox();
+   expect(box?.height).toBeGreaterThan(63.99);
+   expect(box?.width).toBeGreaterThan(397.92);
+  
+  });
+
+
+     test.step('Проверка размера времени', async() => {
+  const timeNews = await page.locator('[data-test-id="webchat_message_time"][title="11:03:25 GMT+0300 (Москва, стандартное время)"]');//Время в бабле
+  const colorTime = await targeText.evaluate((el) => getComputedStyle(el).color);
+  expect(colorTime).toBe('rgba(34, 37, 43, 0.7)');// Проверка цвета текста заголовка 
+  const box = await timeNews.boundingBox();
+   expect(box?.height).toBeGreaterThan(16.67);
+   expect(box?.width).toBeGreaterThan(34.9);
+  
+  });
+
 
     test.step('Проверка цвета стрелки перелистывания без наведения', async() => {
   const colorStrelka = await page.locator('[data-test-id="MessageContent_MessageCarousel_NextButton"][class="pagerArrowButton-fba5a68f"]').first();//Стрелка перелистывания новости в право
@@ -139,7 +162,15 @@ test('Переход в канлы', async ({ page }) => {
   await page.waitForTimeout(1000);
   const strelkaHover = await colorStrelkaHover.evaluate((el) => getComputedStyle(el).color);
   expect(strelkaHover).toBe('rgb(27, 30, 34)');//Првоерка цвета стрелки перелистывания при наведении 
+
+
    })
 
-
-});
+//Вывод всех элемнтов button
+    //  const rows = page.getByRole('button');
+    //  const element = page.locator('[data-test-id="ChannelsTabList_TabButton"]', {hasText : 'Каналы'});
+    //  const button = await rows.evaluateAll(
+    //   list => list.map(element => element.textContent)
+    //  )
+    //  console.log(button);
+  });
