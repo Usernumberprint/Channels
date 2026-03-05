@@ -1,18 +1,13 @@
-// @ts-check
+
 import { test, expect, chromium } from '@playwright/test';
 import { Login } from './Login/login';
 import { MainPageModel } from './Login/MainPageModel';
-import { log } from 'node:console';
-import { mainModule } from 'node:process';
-import { ADDRGETNETWORKPARAMS } from 'node:dns';
-import { defineConfig } from '@playwright/test';
-import { resolveObjectURL } from 'node:buffer';
-import { type } from 'node:os';
+
 const phones = '9141679897';
 const okd = '1212'
 
  
-test('Переход в канлы', async ({ page }) => {
+test('Переход в каналы', async ({ page }) => {
   const login = new Login(page);
   const MainPage = new MainPageModel(page);
 
@@ -34,16 +29,15 @@ test('Переход в канлы', async ({ page }) => {
   await expect(page.locator('[data-test-id="webchat_chatBubble"]').last()).toBeVisible();//Последняя новость видна
   await page.locator('[data-test-id="webchat_message_text"]').last().hover();//Наведение мышки на текст в последней новости
 
-  const opciy = await page.locator('[data-test-id="webchat_message_optionsButton"][title="Опции"]').last();
+  const opciy =  page.locator('[data-test-id="webchat_message_optionsButton"][title="Опции"]').last();
   //await page.getByRole('button', { name: 'Опции' });
-  await opciy.last().hover({timeout : 2000});
-  await expect(opciy.last()).toBeVisible({timeout :1000});//Три точки у бабла
+  await opciy.last().hover();
+  await expect(opciy.last()).toBeVisible();//Три точки у бабла
  
   await opciy.last().click();//Клик на три точки
   await opciy.last().click();//Клик на три точки
-  
-  
-  await expect(page.locator('[data-test-id="Reactions_MoreReactionsButton"]')).toBeVisible({timeout : 1000});//Видим отображение стрелки раскрытия реакции
+  await page.waitForTimeout(2000);
+  await expect(page.locator('[data-test-id="Reactions_MoreReactionsButton"]')).toBeVisible({timeout : 2000});//Видим отображение стрелки раскрытия реакции
  
   await expect(page.getByRole('menuitemradio', { name: 'thumbs_up' })).toBeVisible(); //Смайл
   await expect(page.getByRole('menuitemradio', { name: 'thumbs_down' })).toBeVisible();//Смайл
@@ -90,7 +84,7 @@ test('Переход в канлы', async ({ page }) => {
   await MainPage.moreChannelsButton.click();//Клик на кнопку Больше каналов
   await expect(page.locator('[data-test-id="Header_BackButton"]')).toBeVisible(); //КНопка назад видна
   await expect(MainPage.subscriptionButton.first()).toBeVisible();//плючик добавить канал виден
-  await page.locator('[aria-label="Опросы с ВТБ. Что на картинке?. "]').click();//Клик на канал с название "Опросы с ВТБ"
+  await page.locator('[aria-label="TCCC-1428. "]').click();//Клик на канал с название "Опросы с ВТБ"
   await expect(page.locator('[data-test-id="Header_SettingsButton"]')).toBeVisible();//Три точки видны в канале
   await expect(page.locator('[data-test-id="Subscribe_SubscriptionButton"]')).toBeVisible();//Кнопка Подписаться видна
 
@@ -166,11 +160,44 @@ test('Переход в канлы', async ({ page }) => {
 
    })
 
-//Вывод всех элемнтов button
-    //  const rows = page.getByRole('button');
-    //  const element = page.locator('[data-test-id="ChannelsTabList_TabButton"]', {hasText : 'Каналы'});
-    //  const button = await rows.evaluateAll(
-    //   list => list.map(element => element.textContent)
-    //  )
-    //  console.log(button);
+  });
+
+  test('Проставления реакции на бабл', async ({ page }) => {
+  const login = new Login(page);
+  const MainPage = new MainPageModel(page);
+  await login.open();//Переход по заранее прописанному урлу online.if.test****
+  await login.inputPhone(phones);//Ввод номер телефона задаю через константу 
+  await login.inputOTP()//ввод смс 000000
+  await login.inputOKD(okd);//ввод ОКД , передаю константу в каждый тест ели нет обший концепции проверок
+  await page.waitForTimeout(5000); //5 тайм аута секунд на прогрузку главной
+  await page.locator('[data-test-id="webchat_toggleButton"]').hover();//Наведение кнопку чата на главной для раскрытия ее
+  await expect(page.getByText('Чат с банком')).toBeVisible();//Текст "Чат с банком" виден
+  await expect(MainPage.chatSmall).toBeVisible(); //проверяем что чат виден
+
+  await MainPage.chatSmall.click();//Клик на чат
+  await page.locator('[data-test-id="ChannelsTabList_TabButton"]', {hasText : 'Каналы'}).click();//Клик на вкладку Каналы
+  await page.locator('[data-test-id="ChannelsCard_CardButton"][aria-label="Гид по выгоде. Хотите…. "]').click(); // Клик на канал с название "Гид по выгоде.."
+  const opciy = await page.locator('[data-test-id="webchat_message_optionsButton"][title="Опции"][class="moreButton-db6d5c40"]').last();//Вызов реакции у последнего бабла
+  //await page.getByRole('button', { name: 'Опции' });
+  await page.waitForTimeout(5000);
+  await page.locator('[data-test-id="webchat_message_text"]').last().hover();//Наведение мышки на текст в последней новости
+  await opciy.hover();
+  await expect(opciy).toBeVisible({timeout :1000});//Три точки у бабла
+ 
+  await opciy.click();//Клик на три точки
+  //await opciy.last().click();//Клик на три точки
+    
+  await expect(page.locator('[data-test-id="Reactions_MoreReactionsButton"]')).toBeVisible({timeout : 1000});//Видим отображение стрелки раскрытия реакции
+ 
+  await expect(page.getByRole('menuitemradio', { name: 'thumbs_up' })).toBeVisible(); //Смайл
+  await page.getByRole('menuitemradio', { name: 'thumbs_up' }).click();
+  await expect(page.locator('[data-test-id="webchat_message_reaction"]').last()).toBeVisible();
+  const element = await page.locator('[data-test-id="webchat_message_reaction"]').last();
+  const color = await element.evaluate((el) => getComputedStyle(el).backgroundColor());
+  expect(color).toBe('rgba(6, 99, 239)');
+
+
+
+
+
   });
