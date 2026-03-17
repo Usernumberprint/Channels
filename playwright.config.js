@@ -45,22 +45,23 @@ export default defineConfig({
     {
       name: 'light',
       use: { colorScheme: 'light' },
+      
     },
 
-    {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
-    },
+    // {
+    //   name: 'chromium',
+    //   use: { ...devices['Desktop Chrome'] },
+    // },
 
-    {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
-    },
+    // {
+    //   name: 'firefox',
+    //   use: { ...devices['Desktop Firefox'] },
+    // },
 
-    {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
-    },
+    // {
+    //   name: 'webkit',
+    //   use: { ...devices['Desktop Safari'] },
+    // },
 
     /* Test against mobile viewports. */
     // {
@@ -78,8 +79,12 @@ export default defineConfig({
     //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
     // },
     {
-      name: 'Google Chrome',
-      use: { ...devices['Desktop Chrome'], channel: 'chrome', viewport :  {height : 1263, width: 1165},headless: false,},
+      name: 'Google ChromeDark',
+      use: { ...devices['Desktop Chrome'], channel: 'chrome', viewport :  {height : 1263, width: 1165},headless: false, colorScheme: 'dark'},
+    },
+        {
+      name: 'Google ChromeLight',
+      use: { ...devices['Desktop Chrome'], channel: 'chrome', viewport :  {height : 1263, width: 1165},headless: false, colorScheme: 'light'},
     },
   ],
 
