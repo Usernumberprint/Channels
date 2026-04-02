@@ -1,15 +1,16 @@
 
 import { test, expect, chromium } from '@playwright/test';
-import { Login } from './Login/login';
-import { MainPageModel } from './Login/MainPageModel';
+import { Login } from '../Login/login';
+import { MainPageModel } from '../Login/MainPageModel';
 const fs = require('fs');
+import { devices } from '@playwright/test';
 const { PNG } = require('pngjs');
 const pixelmatch = require('pixelmatch');
 
 const phones = '9142416775';
 const okd = '0312'
 
-test.describe('Каналы в белом' , async() => {
+test.describe('закрытие баннеров' , async() => {
 
     //Функция для закрытия баннера если такой появится.В каждом тесте прописывается данный шаг
 async function banners(slider) {

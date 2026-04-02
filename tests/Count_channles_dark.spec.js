@@ -9,22 +9,98 @@ const pixelmatch = require('pixelmatch');
 const phones = '9142416775';
 const okd = '0312'
 
-test.describe('закрытие баннеров' , async() => {
+test.describe('Каналы в черном' , async() => {
 
     //Функция для закрытия баннера если такой появится.В каждом тесте прописывается данный шаг
-async function banners(slider) {
-        if (await slider.isVisible()){            
-            await slider.click();    
-        }   
-        else {
-    }
-}
+// async function banners(slider,banner) {
+//     if (await slider.isVisible() || await banner.isVisible()){
+//         if (await slider.isVisible()){            
+//             await slider.click();    
+//         }
+//         if (await banner.isVisible(banner)){
+//             await banner.click();
+//         }   
+//         else {
+//     }
+// }
+// }
 
-test('Каналы Безопасность ', async ({ page }) => {
+test('Канал Специально для вас', async ({ page }) => {
     const login = new Login(page);
     const slider=  await page.locator('[data-test-id="slider_modal_close-button"]');
-    
+    const banner = await page.getByRole('button', { name: 'Закрыть' });
     await login.open();//Переход по заранее прописанному урлу online.if.test****
+    await login.inputPhone(phones);//Ввод номер телефона задаю через константу 
+    await login.inputOTP()//ввод смс 000000
+    await login.inputOKD(okd);//ввод ОКД , передаю константу в каждый тест ели нет обший концепции проверок
+    await page.waitForTimeout(5000); //5 тайм аута секунд на прогрузку главной
+
+    //await banners(slider);//Запуск функции на проверку баннера , если баннер появится то закроем его
+    //await banner.click();//Запуск функции на проверку баннера , если баннер появится то закроем его
+
+     //Переход в чат через профиль
+    await page.getByRole('button', {name : 'Профиль'}).click();//переход в Профиль 
+    await expect(page.locator('[data-test-id="profile-btn-action-chat"]')).toBeVisible();
+    await page.locator('[data-test-id="profile-btn-action-chat"]').click();//Переход в чат через профиль
+
+    const SpecialForYou = await  page.locator('[data-test-id="ChannelsCard_CardButton"]').filter(/Специально для вас/);//Константа канала
+
+     //Переход в каналы
+    await page.locator('[data-test-id="ChannelsTabList_TabButton"]', {hasText : 'Каналы'}).click();//Клик на вкладку Каналы
+    await expect(SpecialForYou).toBeVisible();//Канал Что нового виден
+    //await VtbMoney.screenshot({path : './Dark_Count_channles.spec.js-snapshots/VTBMoney.png'});//Скриншот канала
+    //await expect(VtbMoney).toHaveScreenshot('VTBMoney.png');//Сравнения скриншота с тем что есть 
+    const color = await SpecialForYou.evaluate((el) => getComputedStyle(el).color); //Беру значения цвета из DOM
+    expect(color).toBe('rgb(255, 255, 255)');//Сравниваю с тем что прописано     
+    await expect(page.getByText('Вам направили приглашение в группу Близкие. Примите его и начните получать: • Кэшбэк Посмотреть')).toBeVisible();//Текст у канала виден 
+    const notNotification = page.locator('[data-test-id="ChannelsTabList_TabButton"][aria-label="Без уведомлений. Специально для вас. Вам направили приглашение в группу Близкие. Примите…. "]')
+    //await expect(notNotification).not.toBeVisible();// НЕ виден Колокольчик 
+
+    //Переход в ленту канала
+    await SpecialForYou.click();//Клик по каналу
+    await expect(page.locator('.header__title__titleName-ffeaa1f2')).toHaveText(/Специально для вас/);//В хедере видно название канала и Имеет название "ВТБ это к деньгам"
+
+     //Переход в профиль канала
+    await page.locator('.header__title__titleName-ffeaa1f2').click();//Клик на Хедер канала
+    await expect(page.locator('.title-f76f2987')).toHaveText('/Специально для вас');//В профиле канала видно название канала "ВТБ — это к деньгам"
+    const backGround = await page.locator('.description-f4aba16a');//подложка под текстом
+    const ColorBackgroud = await backGround.evaluate((el) => getComputedStyle(el).color);//Беру его цветовую состовляющую , в данном случае цвет background
+    expect(ColorBackgroud).toBe("rgba(124, 135, 152, 0.16)");//Проверка цвета подложки под текстом в профиле канала
+    await expect(page.getByText('Канал для тех, кто хочет эффективно управлять сбережениями. Инструменты, лайфхаки, новости')).toBeVisible();//Текст под названием Канала в профиле канала
+    await expect(page.locator('.notificationTitle-c633030c', {name : 'Уведомления'})).toBeVisible();//Уведомления
+    const notification = await page.locator('[data-test-id="channel-notification-switch"]');//Уведомления локатор
+    if (notNotification.isEnabled()) {        
+    }else {
+        await notification.click();
+    }
+    await page.locator('[data-test-id="Header_BackButton"][type="button"][class="backButton-deae9738"][aria-label="Вернуться назад"]').click()
+    await page.locator('[data-test-id="Header_BackButton"][type="button"][class="backButton-deae9738"][aria-label="Вернуться назад"]').click()
+    //await expect(page.locator('[data-test-id="channel-notification-switch"]')).toBeEnabled();//Проверка что тогл в состоянии включено
+
+    
+    //Кнопка отписаться
+    await expect(page.locator('[data-test-id="Subscribe_SubscriptionButton"]')).toBeVisible();//Кнопка Отписаться видна
+    await expect(page.locator('[data-test-id="Subscribe_SubscriptionButton"]')).toHaveText('Отписаться');
+    const backGroundButton = await page.locator('[data-test-id="Subscribe_SubscriptionButton"]');//Делаем ее константой
+    const colorBG = await backGroundButton.evaluate((el) => getComputedStyle(el).backgroundColor);//Опеределяем ее цвет в DOM
+    expect(colorBG).toBe('rgba(255, 255, 255, 0.08)');//Првоеряем ее бэскграунд
+    //Текст "Отписаться"
+    const textOtpiska = await page.locator('[data-test-id="Subscribe_SubscriptionButton"]', {name : 'Отписаться'});//Делаем сразу константу из кнопки
+    expect(textOtpiska).toBeVisible();
+    const colorBGtext = await textOtpiska.evaluate((el) => getComputedStyle(el).color);
+    expect(colorBGtext).toBe('rgb(255, 255, 255)');
+});
+
+
+test('Канал Безопасность ', async ({ page }) => {
+    const login = new Login(page);
+    const slider=  await page.locator('[data-test-id="slider_modal_close-button"]');
+
+    await login.open();//Переход по заранее прописанному урлу online.if.test****
+    
+    //     await page.evaluate(()=> {
+    // localStorage.setItem('theme' , 'dark');
+    // })
     await login.inputPhone(phones);//Ввод номер телефона задаю через константу 
     await login.inputOTP()//ввод смс 000000
     await login.inputOKD(okd);//ввод ОКД , передаю константу в каждый тест ели нет обший концепции проверок
@@ -35,18 +111,21 @@ test('Каналы Безопасность ', async ({ page }) => {
     //await expect(MainPage.chatSmall).toBeVisible(); //проверяем что чат виден
     //await page.locator('[data-test-id="profile_mf_buttonicon"][aria-label="Профиль"]').click();
     //await MainPage.chatSmall.click();//Клик на чат
-    await banners(slider);//Запуск функции на проверку баннера , если баннер появится то закроем его
+    //Запуск функции на проверку баннера , если баннер появится то закроем его
+    await banners(slider);
+
     //Переход в чат через профиль
     await expect(page.getByRole('button', {name : 'Профиль'})).toBeVisible();
     await page.getByRole('button', {name : 'Профиль'}).click();//переход в Профиль    
     await page.locator('[data-test-id="profile-btn-action-chat"]').click();//Переход в чат через профиль
     
-    const Bezopasnost = await page.getByRole('button', {name : 'Безопасность'});    
+    const Bezopasnost = await page.getByRole('button', {name : 'Безопасность'});//Канал "Безопасность" в виде константы  
+
     //Переход в каналы
     await page.locator('[data-test-id="ChannelsTabList_TabButton"]', {hasText : 'Каналы'}).click();//Клик на вкладку Каналы
     //await Bezopasnost.screenshot({path : './Dark_Count_channles.spec.js-snapshots/Bezopasnost.png'});//Сделать скриншот
     await expect(Bezopasnost).toHaveScreenshot('Bezopasnost.png', {maxDiffPixelRatio : 0.2});//Сравнения скриншота
-    const color = await Bezopasnost.evaluate((el) => getComputedStyle(el).color);
+    const color = await Bezopasnost.evaluate((el) => getComputedStyle(el).color);//Берем цвет текста канала "Безопасность"
     expect(color).toBe('rgb(255, 255, 255)');//Проверка цвета текста "Безопасность"
     await expect(page.getByText('Вместе выгоднее: кешбэки, скидки и бонусы. Пригласите близких и объединитесь в группу в ВТБ Онлайн — и выгода активируется 💙 Что получаете сразу после вступления: • 5% кешбэка в супермаркетах • кешбэк рублями, без баллов и условий Платите за покупки как обычно — а банк возвращает больше. Отличный повод пригласить близких 👨👩👧👦')).toBeVisible();//Текст у канала виден 
     
@@ -68,14 +147,14 @@ test('Каналы Безопасность ', async ({ page }) => {
     expect(BackGroundToglOn).toBe("rgb(61, 132, 255)");//Проверка цвета тогла в состоянии включено
     await expect(page.locator('[data-test-id="channel-notification-switch"]')).toBeEnabled();//Проверка что тогл в состоянии включено
   //Кнопка отписаться нету
-    await expect(page.locator('[data-test-id="Subscribe_SubscriptionButton"]')).not.toBeVisible();//Кнопка Отписаться видна
+    await expect(page.locator('[data-test-id="Subscribe_SubscriptionButton"]')).not.toBeVisible();//Кнопка Отписаться невидна
 
 });
 
 test('Каналы Дело твое ', async ({ page }) => {
     const login = new Login(page);
     const slider=  await page.locator('[data-test-id="slider_modal_close-button"]');
-    
+
     await login.open();//Переход по заранее прописанному урлу online.if.test****
     await login.inputPhone(phones);//Ввод номер телефона задаю через константу 
     await login.inputOTP()//ввод смс 000000
@@ -120,15 +199,15 @@ test('Каналы Дело твое ', async ({ page }) => {
     expect(colorBG).toBe('rgba(255, 255, 255, 0.08)');//Првоеряем ее бэскграунд
     //Текст "Отписаться"
     const textOtpiska = await page.locator('[data-test-id="Subscribe_SubscriptionButton"]', {name : 'Отписаться'});//Делаем сразу константу из кнопки
-    expect(textOtpiska).toBeVisible();
-    const colorBGtext = await textOtpiska.evaluate((el) => getComputedStyle(el).color);
-    expect(colorBGtext).toBe('rgb(255, 255, 255)');
+    expect(textOtpiska).toBeVisible();//Видим кнопку
+    const colorBGtext = await textOtpiska.evaluate((el) => getComputedStyle(el).color);//Берем ее цвет color
+    expect(colorBGtext).toBe('rgb(255, 255, 255)');//Сравниваем цвет текста "Отписаться"
 });
 
 test('Каналы Гид по выгоде ', async ({ page }) => {
     const login = new Login(page);
     const slider=  await page.locator('[data-test-id="slider_modal_close-button"]');
-    
+  
     await login.open();//Переход по заранее прописанному урлу online.if.test****
     await login.inputPhone(phones);//Ввод номер телефона задаю через константу 
     await login.inputOTP()//ввод смс 000000

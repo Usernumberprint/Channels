@@ -1,3 +1,7 @@
+//npx playwright test --update-snapshots обновление скриншотов
+
+
+
 //скролл
  await page.evaluate(() => window.scrollBy(20, window.innerHeight)); //скролл
  await page.getByRole('button', { name: 'Все шаблоны', exact: true }).scrollIntoViewIfNeeded(); //скролл пока не найдем значения

@@ -33,7 +33,8 @@ export default defineConfig({
     trace: 'on-first-retry',
     viewport : {height : 1263, width: 1165},
     ignoreHTTPSErrors: true,
-    //colorScheme : 'dark',
+    // colorScheme : 'dark',
+    // colorScheme : 'light',
   },
 
   /* Configure projects for major browsers */
@@ -42,11 +43,11 @@ export default defineConfig({
       name: 'dark',
       use: { colorScheme: 'dark' },
     },
-    {
-      name: 'light',
-      use: { colorScheme: 'light' },
+    // {
+    //   name: 'light',
+    //   use: { colorScheme: 'light' },
       
-    },
+    // },
 
     // {
     //   name: 'chromium',
@@ -74,17 +75,21 @@ export default defineConfig({
     // },
 
     /* Test against branded browsers. */
-    // {
-    //   name: 'Microsoft Edge',
-    //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
-    // },
+     {
+      name: 'Galaxy A55 dark',
+      use: { ...devices['Galaxy A55'], colorScheme : 'dark'},
+    },
+         {
+      name: 'Galaxy A55 light',
+      use: { ...devices['Galaxy A55'], colorScheme : 'light'},
+    },
     {
       name: 'Google ChromeDark',
-      use: { ...devices['Desktop Chrome'], channel: 'chrome', viewport :  {height : 1263, width: 1165},headless: false, colorScheme: 'dark'},
+      use: { ...devices['Desktop Chrome'], channel: 'chrome', viewport :  {height : 1263, width: 1165},headless: false, colorScheme : 'dark'},
     },
         {
       name: 'Google ChromeLight',
-      use: { ...devices['Desktop Chrome'], channel: 'chrome', viewport :  {height : 1263, width: 1165},headless: false, colorScheme: 'light'},
+      use: { ...devices['Desktop Chrome'], channel: 'chrome', viewport :  {height : 1263, width: 1165},headless: false},
     },
   ],
 
